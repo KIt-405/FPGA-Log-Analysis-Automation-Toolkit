@@ -4,7 +4,6 @@ import argparse
 import os
 
 def parse_log(file_path):
-    """Scans the EDA log file and extracts warnings, errors, and timing data."""
     print(f"[*] Parsing log file: {file_path}")
     
     log_pattern = re.compile(r"^(INFO|WARNING|ERROR):\s+\[(.*?)\]\s+(.*)$")
@@ -37,7 +36,6 @@ def parse_log(file_path):
     return parsed_data
 
 def analyze_data(raw_data):
-    """Uses Pandas to group recurring issues and isolate timing violations."""
     print("[*] Analyzing and aggregating data...")
     df = pd.DataFrame(raw_data)
     
