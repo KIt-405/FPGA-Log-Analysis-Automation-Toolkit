@@ -44,25 +44,20 @@ def analyze_data(raw_data):
 
     issues_df = df[df['Severity'].isin(['WARNING', 'ERROR'])]
     
-    # Count occurrences of identical errors/warnings
     summary_df = issues_df.groupby(['Severity', 'Code', 'Message']).size().reset_index(name='Occurrences')
     summary_df = summary_df.sort_values(by=['Severity', 'Occurrences'], ascending=[True, False])
     
-    # Isolate negative slack
     timing_failures = df[df['WNS (ns)'].notnull()].sort_values(by='WNS (ns)', ascending=True)
     
     return summary_df, timing_failures
 
 def generate_github_report(summary_df, timing_df, output_dir):
-    """Generates a GitHub Dark Mode styled HTML report and a CSV summary."""
     print(f"[*] Generating reports in: {output_dir}")
     os.makedirs(output_dir, exist_ok=True)
     
-    # Save CSV
     csv_path = os.path.join(output_dir, "log_summary.csv")
     summary_df.to_csv(csv_path, index=False)
     
-    # Generate GitHub-styled HTML
     html_path = os.path.join(output_dir, "regression_report.html")
     
     html_content = f"""
@@ -125,14 +120,12 @@ def generate_github_report(summary_df, timing_df, output_dir):
     print(f"[+] Success! Open {html_path} in your browser to view.")
 
 if __name__ == "__main__":
-    # Command Line Interface Setup
     parser = argparse.ArgumentParser(description="Parse and analyze FPGA EDA log files.")
     parser.add_argument("--input", required=True, help="Path to the EDA log file (e.g., data/simulation.log)")
     parser.add_argument("--outdir", default="outputs", help="Directory to save the generated reports")
     
     args = parser.parse_args()
     
-    # Run the pipeline
     raw_data = parse_log(args.input)
     summary, timing = analyze_data(raw_data)
     generate_github_report(summary, timing, args.outdir)
